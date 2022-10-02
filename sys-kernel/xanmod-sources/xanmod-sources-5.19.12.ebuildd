@@ -23,22 +23,24 @@ KEYWORDS="~amd64"
 #
 #IUSE="cjktty tt"
 
+IUSE="cjktty surface"
 SLOT="edge"
 XANMOD_VERSION="1"
 XANMOD_URI="https://github.com/xanmod/linux/releases/download/"
 OKV="${OKV}-xanmod"
 TT_URI="https://raw.githubusercontent.com/hamadmarri/TT-CPU-Scheduler/master/patches/"
+CJKTTY_URI="https://raw.githubusercontent.com/zhmars/cjktty-patches/master/v${KV_MAJOR}.x/"
 SRC_URI="
 	${KERNEL_BASE_URI}/linux-${KV_MAJOR}.${KV_MINOR}.tar.xz
 	${GENPATCHES_URI}
 	${XANMOD_URI}/${OKV}${XANMOD_VERSION}/patch-${OKV}${XANMOD_VERSION}.xz
+	${CJKTTY_URI}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch
 "
 	#${TT_URI}/${KV_MAJOR}.${KV_MINOR}/tt-${KV_MAJOR}.${KV_MINOR}.patch
+	#${CJKTTY_URI}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch
 #"
-echo ${KERNEL_BASE_URI}
-for i in ${KERNEL_BASE_URI}; do
-	echo i
-src_unpak() {
+
+src_unpack() {
 	universal_unpack
 	mkdir "${WORKDIR}/genpatches" || die
 	for i in ${K_WANT_GENPATCHES}; do
@@ -51,6 +53,15 @@ src_unpak() {
 	for i in $(dir "${WORKDIR}"/genpatches/*.patch); do
 		UNIPATCH_LIST+=" ${i}"
 	done
+
+	if use cjktty; then
+		UNIPATCH_LIST+=" ${DISTDIR}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch"
+	fi
+
+#	if use surface; then
+#		git clone --depth=1 https://github.com/linux-surface/linux-surface.git
+#		cp -r ./linux-surface/patches/* .
+#	fi
 
 	UNIPATCH_LIST+=" ${DISTDIR}/patch-${OKV}${XANMOD_VERSION}.xz"
 	unipatch "${UNIPATCH_LIST}"
