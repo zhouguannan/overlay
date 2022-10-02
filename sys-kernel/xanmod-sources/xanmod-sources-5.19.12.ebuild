@@ -30,7 +30,6 @@ XANMOD_URI="https://github.com/xanmod/linux/releases/download/"
 OKV="${OKV}-xanmod"
 TT_URI="https://raw.githubusercontent.com/hamadmarri/TT-CPU-Scheduler/master/patches/"
 CJKTTY_URI="https://raw.githubusercontent.com/zhmars/cjktty-patches/master/v${KV_MAJOR}.x/"
-SURFACE_URI="https://raw.githubusercontent.com/linux-surface/linux-surface/master/patches/${KV_MAJOR}/"
 SRC_URI="
 	${KERNEL_BASE_URI}/linux-${KV_MAJOR}.${KV_MINOR}.tar.xz
 	${GENPATCHES_URI}
@@ -60,6 +59,8 @@ src_unpack() {
 	fi
 
 	if use surface; then
+		git clone --depth=1 https://github.com/linux-surface/linux-surface.git
+		cp -r ./linux-surface/patches/* .
 		UNIPATCH_LIST+=" ${DISTDIR}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch"
 	fi
 
