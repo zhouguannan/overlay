@@ -4,7 +4,7 @@
 EAPI="8"
 K_WANT_GENPATCHES="base extras"
 #Note: to bump xanmod, check K_GENPATCHES_VER in sys-kernel/gentoo-sources
-K_GENPATCHES_VER="10"
+K_GENPATCHES_VER="72"
 K_SECURITY_UNSUPPORTED="1"
 K_NOSETEXTRAVERSION="1"
 ETYPE="sources"
@@ -13,32 +13,24 @@ detect_version
 
 DESCRIPTION="Full XanMod source, including the Gentoo patchset and other patch options."
 HOMEPAGE="https://xanmod.org
-		https://github.com/zhmars/cjktty-patches
-		https://github.com/hamadmarri/TT-CPU-Scheduler"
+		https://github.com/zhmars/cjktty-patches"
 LICENSE+=" CDDL"
 KEYWORDS="~amd64"
 
-#
-# Freeze the 'tt' use flag until the corresponding patch is released upstream.
-#
-#IUSE="cjktty tt"
-
-SLOT="edge"
+IUSE="cjktty"
+SLOT="stable"
 XANMOD_VERSION="1"
 XANMOD_URI="https://github.com/xanmod/linux/releases/download/"
 OKV="${OKV}-xanmod"
-TT_URI="https://raw.githubusercontent.com/hamadmarri/TT-CPU-Scheduler/master/patches/"
+CJKTTY_URI="https://raw.githubusercontent.com/zhmars/cjktty-patches/master/v${KV_MAJOR}.x/"
 SRC_URI="
 	${KERNEL_BASE_URI}/linux-${KV_MAJOR}.${KV_MINOR}.tar.xz
 	${GENPATCHES_URI}
 	${XANMOD_URI}/${OKV}${XANMOD_VERSION}/patch-${OKV}${XANMOD_VERSION}.xz
+	${CJKTTY_URI}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch
 "
-	#${TT_URI}/${KV_MAJOR}.${KV_MINOR}/tt-${KV_MAJOR}.${KV_MINOR}.patch
-#"
-echo ${KERNEL_BASE_URI}
-for i in ${KERNEL_BASE_URI}; do
-	echo i
-src_unpak() {
+
+src_unpack() {
 	universal_unpack
 	mkdir "${WORKDIR}/genpatches" || die
 	for i in ${K_WANT_GENPATCHES}; do
@@ -52,7 +44,12 @@ src_unpak() {
 		UNIPATCH_LIST+=" ${i}"
 	done
 
+	if use cjktty; then
+		UNIPATCH_LIST+=" ${DISTDIR}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch"
+	fi
+
 	UNIPATCH_LIST+=" ${DISTDIR}/patch-${OKV}${XANMOD_VERSION}.xz"
+
 	unipatch "${UNIPATCH_LIST}"
 	unpack_fix_install_path
 	env_setup_xmakeopts
