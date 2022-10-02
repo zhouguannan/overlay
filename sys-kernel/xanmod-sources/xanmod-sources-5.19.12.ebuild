@@ -58,10 +58,10 @@ src_unpack() {
 		UNIPATCH_LIST+=" ${DISTDIR}/cjktty-${KV_MAJOR}.${KV_MINOR}.patch"
 	fi
 
-	if use surface; then
-		git clone --depth=1 https://github.com/linux-surface/linux-surface.git
-		cp -r ./linux-surface/patches/* .
-	fi
+#	if use surface; then
+#		git clone --depth=1 https://github.com/linux-surface/linux-surface.git
+#		cp -r ./linux-surface/patches/* .
+#	fi
 
 	UNIPATCH_LIST+=" ${DISTDIR}/patch-${OKV}${XANMOD_VERSION}.xz"
 	unipatch "${UNIPATCH_LIST}"
